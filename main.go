@@ -1,11 +1,12 @@
 package main
 
 import (
+	"log"
+	"os"
+
 	"tugasbesar/config"
 	"tugasbesar/model"
 	"tugasbesar/router"
-
-	"log"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/logger"
@@ -13,17 +14,13 @@ import (
 )
 
 func main() {
-	// ✅ LOAD .env
-	if err := godotenv.Load(); err != nil {
-		log.Println(".env tidak ditemukan, pakai system env")
-	}
+	// Load env (local only, Railway pakai system env)
+	_ = godotenv.Load()
 
 	app := fiber.New()
 
-	// Inisialisasi koneksi DB
+	// DB
 	config.InitDB()
-
-	// Auto migrate tabel
 	config.DB.AutoMigrate(&model.User{})
 
 	// CORS
@@ -35,6 +32,12 @@ func main() {
 	// Routes
 	router.SetupRoutes(app)
 
-	// Run server
-	app.Listen(":3000")
+	// Railway PORT
+	port := os.Getenv("PORT")
+	if port == "" {
+		port = "3000" // local
+	}
+
+	log.Println("Server running on port:", port)
+	log.Fatal(app.Listen(":" + port))
 }
