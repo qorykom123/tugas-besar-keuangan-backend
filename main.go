@@ -14,7 +14,7 @@ import (
 )
 
 func main() {
-	// Load env (local only, Railway pakai system env)
+	// Load env (local only, Render/Railway pakai system env)
 	_ = godotenv.Load()
 
 	app := fiber.New()
@@ -29,13 +29,21 @@ func main() {
 	// Logger
 	app.Use(logger.New())
 
+	// Root health check
+	app.Get("/", func(c *fiber.Ctx) error {
+		return c.JSON(fiber.Map{
+			"status":  "ok",
+			"message": "Backend Tugas Besar Keuangan running 🚀",
+		})
+	})
+
 	// Routes
 	router.SetupRoutes(app)
 
-	// Railway PORT
+	// PORT (Render/Railway wajib pakai env PORT)
 	port := os.Getenv("PORT")
 	if port == "" {
-		port = "3000" // local
+		port = "3000"
 	}
 
 	log.Println("Server running on port:", port)
