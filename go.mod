@@ -1,6 +1,6 @@
 module tugasbesar
 
-go 1.25.5
+go 1.25
 
 require (
 	github.com/gofiber/contrib/jwt v1.1.2
